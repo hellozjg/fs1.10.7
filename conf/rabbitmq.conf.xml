@@ -1,0 +1,29 @@
+<configuration name="rabbitmq.conf" description="Rabbitmq Configuration">
+	<producers>
+    <producer name="default">
+     <connections>
+      <connection name="primary">
+          <param name="hostname" value="172.26.50.105"/>
+          <param name="virtualhost" value="/"/>
+          <param name="username" value="admin"/>
+          <param name="password" value="admin"/>
+          <param name="port" value="5672"/>
+          <param name="heartbeat" value="1"/>
+       </connection>
+    </connections>
+    <params>
+      <param name="exchange-type" value="direct"/>
+        <param name="exchange-name" value="rtp_t_ex"/>
+      <param name="circuit_breaker_ms" value="10000"/>
+      <param name="reconnect_interval_ms" value="1000"/>
+      <param name="routing-key" value="rtp_t_queue"/>
+      <param name="priority" value="0"/>
+      <param name="delivery-mode" value="2"/>
+      <param name="headers" value=""/>
+      <param name="content_encoding" value="UTF-8"/>
+      <param name="content_type" value="text/plain"/>
+    </params>
+
+  </producer>
+  </producers>
+ </configuration>

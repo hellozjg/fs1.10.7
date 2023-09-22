@@ -1,0 +1,14 @@
+<configuration name="dial_detect.conf" description="www.fastcall.cn">
+  <settings>
+  	  <param name="record-path" value=""/>
+      <param name="asr-ip" value="127.0.0.1"/>
+      <param name="asr-port" value="4451"/>
+      <param name="start_thresh" value="450"/>
+      <param name="end_thresh" value="300"/>
+      <param name="speech-timeout" value="1200"/>
+      <param name="per-send-buffer-count" value="5"/>
+      <param name="vad-count" value="4"/>
+      <param name="service-id" value="1"/>
+      <param name="asr-sample-rate" value="8000"/>
+  </settings>
+</configuration> 

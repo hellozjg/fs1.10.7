@@ -1,0 +1,185 @@
+<configuration name="cti2.conf" description="cti">
+  <settings>
+      <param name="odbc-dsn" value="cti:root:123.com"/>
+      <param name="database" value="standard"/>
+      <param name="odbc-type" value="mysql"/>
+      <param name="dbname" value="users"/>
+      <param name="bindfile" value="user"/>
+      
+      <!--param name="record-template" value="$${recordings_dir}/${strftime(%Y%m%d)}/${strftime(%Y%m%d%H%M%S)}_${destination_number}_${fs_ext}_${uuid}.wav"/-->
+      <param name="record-template" value="$${recordings_dir}/${strftime(%Y%m%d)}/${strftime(%Y%m%d%H%M%S)}_${callee}_${fs_ext}_${uuid}.wav"/> <!--修改了callee，看看自动外呼录音被叫生成是否正常， 如有其他异常，请替换为上面一行-->
+      <param name="announce-template" value="+1 phrase::agent,${agent} both"/>   
+      <param name="serial-username" value="admin"/>
+      <param name="serial-pwd" value="fastcall"/>
+      <param name="super-pwd" value="888888"/>
+	    <param name="queueing-rate" value="0.33"/>
+		   <param name="max-queueing-rate" value="0.6"/>
+	    <param name="queueing-rate" value="0.36"/>
+	  	<param name="start-adjust-rate" value="0.9"/>
+       <param name="enable-backup-record" value="0"/>
+      <param name="backup-path" value="/home/record_backup"/>
+      <param name="transact-seconds" value="5"/>
+      <param name="server-ip" value="127.0.0.1"/>
+      <param name="server-port" value="6666"/>
+      <param name="username" value="admin"/>
+      <param name="passwd" value="fastcall"/>
+  </settings>
+
+  <tables>
+  <table name="cdr">
+  	  <settings>
+			  <param name="odbc-dsn" value="cti:root:123.com"/>
+			  <param name="database" value="standard"/>
+			  <param name="odbc-type" value="pgsql"/>
+	 </settings>
+      <fields>
+	      <field name="session_sn" chan-var-name="call_uuid"/>
+	      <field name="cdr_sn" chan-var-name="uuid"/>
+	      <field name="caller" chan-var-name="sip_from_user"/>
+	      <field name="callee" chan-var-name="sip_req_user"/>
+	      <field name="endreason" chan-var-name="endpoint_disposition"/>
+	      <field name="dtmf" chan-var-name="fwpj"/>
+      </fields>
+  </table>
+  </tables>
+  
+  <cti_profiles>
+		<profile name="default">
+			<settings>
+				<param name="bind-address" value="10.200.78.249:6001" />
+				<param name="io" value="cti" />
+			</settings>
+		</profile>
+
+  </cti_profiles>
+  
+    
+  <dial_profiles>
+  	<profile name="autodial">
+  		<settings>	
+  			<param name="master-table-name" value="dial_task_main"/>
+  			<param name="detail-table-name" value="dial_task_detail"/>
+  			<param name="dial-task-main-primary-key-field-name" value="dial_task_main_id"/>
+  			<param name="dial-task-main-foreign-key-field-name" value="dial_task_main_sn"/>
+  			<param name="dial-task-detail-caller-field-name" value="caller"/>
+  			<param name="dial-task-detail-callee-field-name" value="callee"/>
+  			<param name="dial-task-detail-callee-list-field-name" value="callee_list"/>
+  			<param name="dial-task-detail-attach-fields" value="name,data1,data2,data3,data4"/>
+  			<param name="percentage-field-name" value="percentage"/>
+  			<param name="project-field-name" value="project_sn"/>
+  			<param name="ring-groups-field-name" value="ring_groups"/>
+  			<param name="start-time-at_field-name" value="started_at"/>
+  			<param name="dialplan" value="XML"/>
+  			<param name="context" value="autodial"/>
+  			<param name="need-agent-service" value="0"/>
+  			<param name="week-expression" value="[0-7]"/>
+				<!--param name="time-expression" value="^(08|09|1[0-9]|1[8-9])[0-5][0-9]$"/-->
+				  <param name="time-expression" value="^((09|1[0-1])[0-5][0-9])|(12[0-2][0-9])|(1[4-8][0-5][0-9])$"/>  
+        <!--param name="time-expression" value="^(07|08|09|1[0-8])[0-5][0-9]$"/-->
+  			<param name="per-fetch-count" value="100"/>
+  			<param name="max-pull-count" value="400"/>
+  			<param name="dial-seconds" value="45"/>
+  			<param name="resend-times" value="0"/>
+  			<param name="span-seconds" value="60"/>
+  			<param name="callee-cycle-pattern" value="0"/>
+  		</settings>
+  	</profile>
+  </dial_profiles>
+  
+  <trunk_profiles>
+  	<X-PRE-PROCESS cmd="include" data="../trunk_profiles/*.xml"/> 
+  </trunk_profiles>
+    
+  <groups>
+		<group id = "1">
+		<trunks>
+				<trunk id="1001" type="pointer"/>
+		</trunks>
+	  </group>
+	</groups>
+
+		
+	<routes>
+		<route name="route1">
+			<condition field="caller" expression="^68899999"/>
+			<condition field="callee" expression="^(\d+)$">
+			<settings>
+			  <param name="group-id" value="1"/>
+			</settings>
+			</condition>
+		</route>
+	</routes>
+	
+	<producers>
+    <producer name="default" event_type="4">
+    <params>
+      <param name="bind-type" value="0"/>   <!-- rabbitmq -->
+      <param name="bind-profiles" value="default"/>
+    </params>
+
+    <fields>
+     <field name="talktimes" chan-var-name="talktimes"/><!--??????-->
+     <field name="send_count" chan-var-name="send_count"/><!-- ???? -->
+     <field name="remark" chan-var-name="remark"/><!--????-->
+     <field name="recordfile" chan-var-name="recordfile"/><!--?????-->
+     <field name="recordpath" chan-var-name="recordpath"/><!--????-->
+     <field name="started_at" chan-var-name="connected_at"/><!--????-->
+     <field name="stoped_at" chan-var-name="disconnected_at"/><!--????-->
+     <field name="last_modify" chan-var-name="last_modify"/><!-- ?????? -->
+     <field name="status" chan-var-name="status"/><!-- ?? -->
+     <field name="callstate" chan-var-name="callstate"/><!--???? -->
+     <field name="caller" chan-var-name="caller"/><!--??-->
+     <field name="callee" chan-var-name="callee"/><!--??-->
+     <field name="dial_result" chan-var-name="da2_result"/><!--  ???? -->
+     <field name="endreason" chan-var-name="endpoint_disposition"/><!-- ???? -->
+     <field name="ringtimes" chan-var-name="ringtimes"/><!--????-->
+     <field name="cdrSn" chan-var-name="uuid"/>
+     <field name="sn" chan-var-name="dial_task_detail_sn"/><!--  ???? -->
+     <field name="dial_task_main_sn" chan-var-name="dial_task_main_sn"/><!-- ???? -->
+     <field name="callee_index" chan-var-name="callee_index"/><!--????-->
+     <field name="callee_list" chan-var-name="callee_list"/><!--??????-->
+     <field name="mark" chan-var-name="mark"/><!--??????-->
+     <field name="data7" chan-var-name="data7"/><!--??????-->
+      <field name="task_name" chan-var-name="task_name"/><!--??????-->
+    </fields>
+  </producer>
+
+  </producer>
+    <producer name="default0" event_type="0">
+    <params>
+      <param name="bind-type" value="1"/>   <!-- Pulsar -->
+      <param name="bind-profiles" value="default"/>
+    </params>
+     
+    <fields>
+     <field name="hangup_type" chan-var-name="hangup_type"/>
+     <field name="hangup_disposition" chan-var-name="hangup_disposition"/>
+     <field name="caller" chan-var-name="caller"/>
+     <field name="callee" chan-var-name="callee"/>
+     <field name="started_at" chan-var-name="started_at"/>
+     <field name="startqueue_at" chan-var-name="startqueue_at"/>
+     <field name="endqueue_at" chan-var-name="endqueue_at"/>
+     <field name="startring_at" chan-var-name="startring_at"/>
+     <field name="endring_at" chan-var-name="endring_at"/>
+     <field name="endring_at" chan-var-name="endring_at"/>
+     <field name="connected_at" chan-var-name="connected_at"/>
+     <field name="disconnected_at" chan-var-name="disconnected_at"/>
+     <field name="talktimes" chan-var-name="talktimes"/>
+    </fields>  
+  </producer>
+  
+ </producers>	
+
+ <databases>
+		<database name="cti">
+			<settings>
+			  <param name="odbc-dsn" value="cti:root:123.com"/>
+			</settings>
+		</database>
+		<database name="freeswitch">
+			<settings>
+			  <param name="odbc-dsn" value="freeswitch:root:123.com"/>
+			</settings>
+		</database>
+	</databases>
+</configuration> 

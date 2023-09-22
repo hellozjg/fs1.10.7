@@ -1,0 +1,18 @@
+<configuration name="pulsar.conf" description="Pulsar Configuration">
+	<producers>
+		
+    <producer name="default">
+     <connections>
+      <connection name="primary">
+          <param name="hostname" value=""/>
+          <param name="token" value="/"/>
+          <param name="topic" value=""/>
+       </connection>
+    </connections>
+    <params>
+      <param name="circuit_breaker_ms" value="10000"/>
+    </params>
+  
+  </producer>
+ </producers>	
+ </configuration>
