@@ -1,0 +1,147 @@
+﻿<configuration name="spandsp.conf" description="SpanDSP config">
+	
+	  <vad-settings>
+	  	<!-- 持续有声检测的个数判断为说话-->
+      <param name="vad-count" value="3"/>
+       <!-- 音量大小判断为有声-->
+      <param name="vad-thresh" value="400"/>
+      <!-- 彩铃后无声时长判断为应答，返回结果2-->
+      <param name="ringcolor-silence-time" value="1200"/>
+      <!-- 信号音后无声时长判断为通话 返回结果3-->
+      <param name="tone-silence-time" value="4500"/>
+       <!-- 拨号后无声最大时长判断为无应答，返回结果4 -->
+      <param name="max-silence-timeout" value="15000"/>
+      <!-- 拨号检测(振铃后或彩铃后)一直维持相同状态的超时时间，返回结果4 -->
+      <param name="max_dial_timeout" value="40000"/>
+      <!-- asr识别服务器地址 -->
+      <param name="asr-ip" value="127.0.0.1"/>
+      <!-- asr识别服务器端口 -->
+      <param name="asr-port" value="4451"/>
+       <!-- asr服务器对应的服务id -->
+      <param name="service-id" value="1"/>
+      <!-- 每次向asr服务器发送包的大小 -->
+      <param name="per-send-buffer-count" value="5"/>
+      <!-- vad说话结束断句的时长 -->
+      <param name="speech-timeout" value="1200"/>
+       <!-- vad说话最大识别时长 -->
+      <param name="voice-timeout" value="10000"/>
+       <!-- 录音文件路径 -->
+      <param name="record-path" value="/home/record"/>
+      
+    </vad-settings>
+    
+    <modem-settings>
+      <param name="total-modems" value="0"/>
+      <!-- Change the directory of the devices created from /dev. Needed if FS runs as non-root -->
+      <!-- <param name="directory" value="/dev/FS"/> -->
+
+      <!-- Default context and dialplan to use on inbound calls from the modems -->
+      <param name="context" value="default"/>
+      <param name="dialplan" value="XML"/>
+
+      <!-- Extra tracing for debugging -->
+      <param name="verbose" value="false"/>
+    </modem-settings>
+    
+    <fax-settings>
+	<param name="use-ecm"		value="true"/>
+	<param name="verbose"		value="false"/>
+	<param name="disable-v17"	value="false"/>
+	<param name="ident"		value="SpanDSP Fax Ident"/>
+	<param name="header"		value="SpanDSP Fax Header"/>
+
+	<param name="spool-dir"		value="/tmp"/>
+	<param name="file-prefix"	value="faxrx"/>
+    </fax-settings>
+
+    <descriptors debug-level="1">
+
+     <!-- These tones are defined in Annex to ITU Operational Bulletin No. 781 - 1.II.2003 -->
+     <!-- Various Tones Used in National Networks (According to ITU-T Recommendation E.180)(03/1998) -->
+  <descriptor name="66">
+       <tone name="CED_TONE">
+        <element freq1="450" freq2="0" min="900" max="1200"/> 
+        <element freq1="0" freq2="0" min="1000" max="4000"/>          
+       </tone>
+       
+       <tone name="BUSY_TONE">
+        <element freq1="450" freq2="0" min="300" max="400"/>
+        <element freq1="0" freq2="0" min="300" max="400"/>
+        <element freq1="450" freq2="0" min="300" max="400"/>
+        <element freq1="0" freq2="0" min="300" max="400"/>
+       </tone> 
+     </descriptor>
+     
+     <!-- North America -->
+     <descriptor name="1">
+       <tone name="CED_TONE">
+         <element freq1="2100" freq2="0" min="700" max="0"/>
+       </tone>
+       <tone name="SIT">
+         <element freq1="950" freq2="0" min="256" max="400"/>
+         <element freq1="1400" freq2="0" min="256" max="400"/>
+         <element freq1="1800" freq2="0" min="256" max="400"/>
+       </tone>
+       <tone name="RING_TONE" description="North America ring">
+         <element freq1="440" freq2="480" min="1200" max="0"/>
+       </tone>
+       <tone name="REORDER_TONE">
+         <element freq1="480" freq2="620" min="224" max="316"/>
+         <element freq1="0" freq2="0" min="168" max="352"/>
+         <element freq1="480" freq2="620" min="224" max="316"/>
+       </tone>
+       <tone name="BUSY_TONE">
+         <element freq1="480" freq2="620" min="464" max="536"/>
+         <element freq1="0" freq2="0" min="464" max="572"/>
+         <element freq1="480" freq2="620" min="464" max="536"/>
+       </tone>
+     </descriptor>
+
+     <!-- United Kingdom -->
+     <descriptor name="44">
+       <tone name="CED_TONE">
+         <element freq1="2100" freq2="0" min="500" max="0"/>
+       </tone>
+       <tone name="SIT">
+         <element freq1="950" freq2="0" min="256" max="400"/>
+         <element freq1="1400" freq2="0" min="256" max="400"/>
+         <element freq1="1800" freq2="0" min="256" max="400"/>
+       </tone>
+       <tone name="REORDER_TONE">
+         <element freq1="400" freq2="0" min="368" max="416"/>
+         <element freq1="0" freq2="0" min="336" max="368"/>
+         <element freq1="400" freq2="0" min="256" max="288"/>
+         <element freq1="0" freq2="0" min="512" max="544"/>
+       </tone>
+       <tone name="BUSY_TONE">
+         <element freq1="400" freq2="0" min="352" max="384"/>
+         <element freq1="0" freq2="0" min="352" max="384"/>
+         <element freq1="400" freq2="0" min="352" max="384"/>
+         <element freq1="0" freq2="0" min="352" max="384"/>
+       </tone>
+     </descriptor>
+
+     <!-- Germany -->
+     <descriptor name="49">
+       <tone name="CED_TONE">
+         <element freq1="2100" freq2="0" min="500" max="0"/>
+       </tone>
+       <tone name="SIT">
+         <element freq1="900" freq2="0" min="256" max="400"/>
+         <element freq1="1400" freq2="0" min="256" max="400"/>
+         <element freq1="1800" freq2="0" min="256" max="400"/>
+       </tone>
+       <tone name="REORDER_TONE">
+         <element freq1="425" freq2="0" min="224" max="272"/>
+         <element freq1="0" freq2="0" min="224" max="272"/>
+       </tone>
+       <tone name="BUSY_TONE">
+         <element freq1="425" freq2="0" min="464" max="516"/>
+         <element freq1="0" freq2="0" min="464" max="516"/>
+       </tone>
+     </descriptor>
+   </descriptors>
+
+</configuration>
+
+ 
